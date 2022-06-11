@@ -3,18 +3,30 @@
   "version": "2.0.4",
   "description": "gulp-builder for weblayout",
   "main": "gulpfile.js",
-  "author": "Oleksiy Hrybach",
+  "scripts": {
+    "html": "node-w3c-validator -f lint -evH -i app/**/*.html",
+    "dev": "gulp",
+    "build": "gulp build",
+    "cache": "gulp cache",
+    "backend": "gulp backend",
+    "zip": "gulp zip",
+    "code": "editorconfig-checker"
+  },
+  "author": "Hrybach Oleksiy",
   "license": "ISC",
   "devDependencies": {
-    "browser-sync": "^2.27.10",
+    "browser-sync": "^2.26.14",
+    "del": "^6.1.1",
     "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^8.0.0",
+    "gulp-autoprefixer": "^7.0.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-cli": "^2.3.0",
-    "gulp-notify": "^4.0.0",
+    "gulp-file-include": "^2.3.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-notify": "^3.2.0",
     "gulp-sass": "^5.1.0",
-    "gulp-sourcemaps": "^3.0.0",
+    "gulp-typograf": "^4.0.3",
     "sass": "^1.52.3"
-  },
-  "dependencies": {}
+  }
 }
