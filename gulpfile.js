@@ -11,6 +11,7 @@ const concat = require('gulp-concat');
 const del = require('del');
 const typograf = require('gulp-typograf');
 
+
 const clean = () => {
     return del('dist')
 }
@@ -42,6 +43,13 @@ const fonts = () => {
         .pipe(dest('dist/fonts/'))
 }
 
+const images = () => {
+    return src([`app/images/**/**.{jpg,jpeg,png,svg}`])
+        .pipe(dest('dist/images/'))
+};
+
+
+
 const watchingFiles = () => {
     browserSync.init({ // Инициализация Browsersync
         server: { baseDir: 'dist/' }, // Указываем папку сервера
@@ -51,13 +59,13 @@ const watchingFiles = () => {
 
     watch('app/scss/**/*.scss', styles);
     watch('app/fonts/*.*', fonts);
-    /*watch(["app/partials/!*.html", "app/!*.html"]).on('change', browserSync.reload);*/
     watch('app/partials/*.html', htmlInclude);
     watch('app/*.html', htmlInclude);
+    watch([`app/images/**/**.{jpg,jpeg,png,svg}`], images);
 }
 
 exports.styles = styles;
 exports.clean = clean;
 
 
-exports.default = series(clean, htmlInclude, fonts, styles, watchingFiles);
+exports.default = series(clean, htmlInclude, fonts, images, styles, watchingFiles);
