@@ -352,5 +352,5 @@ MigrationBackup/
 .idea/
 
 /node_modules
-/app
+/dist
 package-lock.json

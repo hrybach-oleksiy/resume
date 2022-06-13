@@ -1,165 +1,63 @@
-const {src, dest, series, watch} = require('gulp');
-const autoprefixer = require('gulp-autoprefixer');
-const cleanCSS = require('gulp-clean-css');
+'use strict';
+
+const {src, dest, parallel, series, watch} = require('gulp');
+
 const browserSync = require('browser-sync').create();
 const sass = require('gulp-sass')(require('sass'));
-const fileInclude = require('gulp-file-include');
-/*const htmlmin = require('gulp-htmlmin');*/
-const notify = require('gulp-notify');
-const typograf = require('gulp-typograf');
+const autoprefixer = require('gulp-autoprefixer');
+const cleanCSS = require('gulp-clean-css');
+const fileinclude = require('gulp-file-include');
+const concat = require('gulp-concat');
 const del = require('del');
-
-
-
-
-
-/*const path = require('path');*/
-
-/*const rootFolder = path.basename(path.resolve());*/
-
-// paths
-const srcFolder = './src';
-const buildFolder = './app';
-const paths = {
-  srcSvg: `${srcFolder}/img/svg/**.svg`,
-  srcImgFolder: `${srcFolder}/img`,
-  buildImgFolder: `${buildFolder}/img`,
-  srcScss: `${srcFolder}/scss/**/*.scss`,
-  buildCssFolder: `${buildFolder}/css`,
-  srcFullJs: `${srcFolder}/js/**/*.js`,
-  srcMainJs: `${srcFolder}/js/main.js`,
-  buildJsFolder: `${buildFolder}/js`,
-  srcPartialsFolder: `${srcFolder}/partials`,
-  resourcesFolder: `${srcFolder}/resources`,
-};
+const typograf = require('gulp-typograf');
 
 const clean = () => {
-  return del([buildFolder])
+    return del('dist')
 }
 
-//svg sprite
-/*const svgSprites = () => {
-  return src(paths.srcSvg)
-    .pipe(
-      svgmin({
-        js2svg: {
-          pretty: true,
-        },
-      })
-    )
-    .pipe(
-      cheerio({
-        run: function ($) {
-          $('[fill]').removeAttr('fill');
-          $('[stroke]').removeAttr('stroke');
-          $('[style]').removeAttr('style');
-        },
-        parserOptions: {
-          xmlMode: true
-        },
-      })
-    )
-    .pipe(replace('&gt;', '>'))
-    .pipe(svgSprite({
-      mode: {
-        stack: {
-          sprite: "../sprite.svg"
-        }
-      },
-    }))
-    .pipe(dest(paths.buildImgFolder));
-}*/
-
-// scss styles
 const styles = () => {
-  return src(paths.srcScss, { sourcemaps: true })
-    .pipe(sass().on('error', notify.onError))
-    .pipe(autoprefixer({cascade: false, format: 'beautify'}))
-    .pipe(cleanCSS({level: 2}))
-    .pipe(dest(paths.buildCssFolder, { sourcemaps: '.' }))
-    .pipe(browserSync.stream());
-};
-
-
-const resources = () => {
-  return src(`${paths.resourcesFolder}/**`)
-    .pipe(dest(buildFolder))
+    return src('app/scss/**/*.scss', {sourcemaps: true})
+        .pipe(sass())
+        .pipe(autoprefixer({overrideBrowserslist: ['last 10 versions'], grid: true }))
+        .pipe(cleanCSS( {level: { 1: { specialComments: 0 } } , format: 'beautify'} ))
+        .pipe(dest('dist/css/', {sourcemaps: '.' }))
+        .pipe(browserSync.stream());
 }
-
-/*const images = () => {
-  return src([`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png,svg}`])
-    .pipe(gulpif(isProd, image([
-      image.mozjpeg({
-        quality: 80,
-        progressive: true
-      }),
-      image.optipng({
-        optimizationLevel: 2
-      }),
-    ])))
-    .pipe(dest(paths.buildImgFolder))
-};
-
-const webpImages = () => {
-  return src([`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png}`])
-    .pipe(webp())
-    .pipe(dest(paths.buildImgFolder))
-};
-
-const avifImages = () => {
-  return src([`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png}`])
-    .pipe(avif())
-    .pipe(dest(paths.buildImgFolder))
-};*/
 
 const htmlInclude = () => {
-  return src([`${srcFolder}/*.html`])
-    .pipe(fileInclude({
-      prefix: '@',
-      basePath: '@file'
-    }))
-    .pipe(typograf({
-      locale: ['ru', 'en-US']
-    }))
-    .pipe(dest(buildFolder))
-    .pipe(browserSync.stream());
+    return src(`app/*.html`)
+        .pipe(fileinclude({
+            prefix: '@',
+            basepath: '@file'
+        }))
+        .pipe(typograf({
+            locale: ['ru', 'en-US']
+        }))
+        .pipe(dest('dist/'))
+        .pipe(browserSync.stream());
 }
 
-const watchFiles = () => {
-  browserSync.init({
-    server: {
-      baseDir: `${buildFolder}`
-    },
-  });
-
-  watch(paths.srcScss, styles);
-  /*watch(paths.srcFullJs, scripts);*/
-  watch(`${paths.srcPartialsFolder}/*.html`, htmlInclude);
-  watch(`${srcFolder}/*.html`, htmlInclude);
-  watch(`${paths.resourcesFolder}/**`, resources);
- /* watch(`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png,svg}`, images);
-  watch(`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png}`, webpImages);
-  watch(`${paths.srcImgFolder}/!**!/!**.{jpg,jpeg,png}`, avifImages);
-  watch(paths.srcSvg, svgSprites);*/
+const fonts = () => {
+    return src('app/fonts/*.*')
+        .pipe(dest('dist/fonts/'))
 }
 
+const watchingFiles = () => {
+    browserSync.init({ // Инициализация Browsersync
+        server: { baseDir: 'dist/' }, // Указываем папку сервера
+        notify: false, // Отключаем уведомления
+        online: true // Режим работы: true или false
+    })
 
-/*const htmlMinify = () => {
-  return src(`${buildFolder}/!**!/!*.html`)
-    .pipe(htmlmin({
-      collapseWhitespace: true
-    }))
-    .pipe(dest(buildFolder));
-}*/
+    watch('app/scss/**/*.scss', styles);
+    watch('app/fonts/*.*', fonts);
+    /*watch(["app/partials/!*.html", "app/!*.html"]).on('change', browserSync.reload);*/
+    watch('app/partials/*.html', htmlInclude);
+    watch('app/*.html', htmlInclude);
+}
+
+exports.styles = styles;
+exports.clean = clean;
 
 
-
-exports.default = series(clean, htmlInclude, styles, resources, watchFiles);
-
-/*exports.backend = series(clean, htmlInclude, scriptsBackend, stylesBackend, resources, images, webpImages, avifImages, svgSprites)*/
-
-/*exports.build = series(toProd, clean, htmlInclude, scripts, styles, resources, images, webpImages, avifImages, svgSprites, htmlMinify);*/
-
-/*exports.cache = series(cache, rewrite);*/
-
-/*exports.zip = zipFiles;*/
+exports.default = series(clean, htmlInclude, fonts, styles, watchingFiles);
