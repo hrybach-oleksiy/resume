@@ -1,0 +1,13 @@
+
+:root {
+  // base
+  --font-family: Roboto, sans-serif;
+  --content-width: 1140px;
+  --container-offset: 15px;
+  --container-width: calc(var(--content-width) + (var(--container-offset) * 2));
+
+  // colors
+  --accent: #cc4646;
+  --light-color: #fff;
+  --light-color-alpha: rgba(255, 255, 255, .5);
+}
