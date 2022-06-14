@@ -1,0 +1,31 @@
+.skills {
+  padding: 70px 0;
+  background-color: var(--titanium-white);
+
+  &__wrapper {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px;
+  }
+
+  &__item {
+    grid-column: span 4;
+    padding: 0 10px;
+  }
+
+  &__head {
+    padding: 20px 10px;
+    background-color: var(--light-color);
+  }
+
+  &__subtitle {
+    font-size: 24px;
+  }
+
+  &__desc {
+    padding: 15px;
+    background-color: var(--snowflake);
+  }
+
+
+}
