@@ -1,5 +1,7 @@
 
-
+body {
+  color: var(--main-color);
+}
 
 .site-container {
   overflow: hidden; // если используете на сайте position: sticky - уберите эту настройку
