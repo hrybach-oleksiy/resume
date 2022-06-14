@@ -3,6 +3,12 @@ body {
   color: var(--main-color);
 }
 
+.section-title {
+  font-size: 40px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
 .site-container {
   overflow: hidden; // если используете на сайте position: sticky - уберите эту настройку
 }
